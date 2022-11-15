@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.license      = 'MIT'
   s.homepage     = 'n/a'
-  s.source       = { :git => "https://github.com/RonRadtke/react-native-blob-util" }
-  s.author       = 'RonRadtke'
+  s.source       = { :git => "https://github.com/dustinth/react-native-blob-util" }
+  s.author       = 'dustinth'
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.platform     = :ios, "8.0"
   s.framework    = 'AssetsLibrary'
