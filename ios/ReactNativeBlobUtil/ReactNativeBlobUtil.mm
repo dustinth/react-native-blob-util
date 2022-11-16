@@ -15,8 +15,8 @@
 #import "ReactNativeBlobUtilSpec.h"
 #endif
 
-dispatch_queue_t commonTaskQueue;
-dispatch_queue_t fsQueue;
+dispatch_queue_t rnbuCommonTaskQueue;
+dispatch_queue_t rnbuFsQueue;
 
 ////////////////////////////////////////
 //
@@ -34,9 +34,9 @@ dispatch_queue_t fsQueue;
 @synthesize bridge = _bridge;
 
 - (dispatch_queue_t) methodQueue {
-    if(commonTaskQueue == nil)
-        commonTaskQueue = dispatch_queue_create("ReactNativeBlobUtil.queue", DISPATCH_QUEUE_SERIAL);
-    return commonTaskQueue;
+    if(rnbuCommonTaskQueue == nil)
+        rnbuCommonTaskQueue = dispatch_queue_create("ReactNativeBlobUtil.queue", DISPATCH_QUEUE_SERIAL);
+    return rnbuCommonTaskQueue;
 }
 
 - (RCTEventDispatcher *)getRCTEventDispatcher
@@ -57,10 +57,10 @@ RCT_EXPORT_MODULE();
 - (id) init {
     self = [super init];
     self.filePathPrefix = FILE_PREFIX;
-    if(commonTaskQueue == nil)
-        commonTaskQueue = dispatch_queue_create("ReactNativeBlobUtil.queue", DISPATCH_QUEUE_SERIAL);
-    if(fsQueue == nil)
-        fsQueue = dispatch_queue_create("ReactNativeBlobUtil.fs.queue", DISPATCH_QUEUE_SERIAL);
+    if(rnbuCommonTaskQueue == nil)
+        rnbuCommonTaskQueue = dispatch_queue_create("ReactNativeBlobUtil.queue", DISPATCH_QUEUE_SERIAL);
+    if(rnbuFsQueue == nil)
+        rnbuFsQueue = dispatch_queue_create("ReactNativeBlobUtil.fs.queue", DISPATCH_QUEUE_SERIAL);
     BOOL isDir;
     // if temp folder not exists, create one
     if(![[NSFileManager defaultManager] fileExistsAtPath: [ReactNativeBlobUtilFS getTempPath] isDirectory:&isDir]) {
@@ -685,7 +685,7 @@ RCT_EXPORT_METHOD(readStream:(NSString *)path withEncoding:(NSString *)encoding 
             bufferSize = 4096;
     }
 
-    dispatch_async(fsQueue, ^{
+    dispatch_async(rnbuFsQueue, ^{
         [ReactNativeBlobUtilFS readStream:path encoding:encoding bufferSize:bufferSize tick:tick streamId:streamId eventDispatcherRef:[self getRCTEventDispatcher]];
     });
 }

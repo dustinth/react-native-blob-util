@@ -24,7 +24,7 @@
 #endif
 
 
-NSMutableDictionary *fileStreams = nil;
+NSMutableDictionary *rnbuFileStreams = nil;
 
 ////////////////////////////////////////
 //
@@ -67,15 +67,15 @@ NSMutableDictionary *fileStreams = nil;
 // static member getter
 + (NSDictionary *) getFileStreams {
 
-    if(fileStreams == nil)
-        fileStreams = [[NSMutableDictionary alloc] init];
-    return fileStreams;
+    if(rnbuFileStreams == nil)
+        rnbuFileStreams = [[NSMutableDictionary alloc] init];
+    return rnbuFileStreams;
 }
 
 +(void) setFileStream:(ReactNativeBlobUtilFS *) instance withId:(NSString *) uuid {
-    if(fileStreams == nil)
-        fileStreams = [[NSMutableDictionary alloc] init];
-    [fileStreams setValue:instance forKey:uuid];
+    if(rnbuFileStreams == nil)
+        rnbuFileStreams = [[NSMutableDictionary alloc] init];
+    [rnbuFileStreams setValue:instance forKey:uuid];
 }
 
 +(NSString *) getPathOfAsset:(NSString *)assetURI

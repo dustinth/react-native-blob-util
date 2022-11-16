@@ -31,12 +31,12 @@
 //
 ////////////////////////////////////////
 
-NSMapTable * expirationTable;
+NSMapTable * rnbuExpirationTable;
 
 __attribute__((constructor))
 static void initialize_tables() {
-    if (expirationTable == nil) {
-        expirationTable = [[NSMapTable alloc] init];
+    if (rnbuExpirationTable == nil) {
+        rnbuExpirationTable = [[NSMapTable alloc] init];
     }
 }
 
@@ -162,7 +162,7 @@ static void initialize_tables() {
 + (void) emitExpiredTasks:(RCTEventDispatcher *)eventDispatcher
 {
     @synchronized ([ReactNativeBlobUtilNetwork class]){
-        NSEnumerator * emu =  [expirationTable keyEnumerator];
+        NSEnumerator * emu =  [rnbuExpirationTable keyEnumerator];
         NSString * key;
 
         while ((key = [emu nextObject]))
@@ -173,8 +173,8 @@ static void initialize_tables() {
         }
 
         // clear expired task entries
-        [expirationTable removeAllObjects];
-        expirationTable = [[NSMapTable alloc] init];
+        [rnbuExpirationTable removeAllObjects];
+        rnbuExpirationTable = [[NSMapTable alloc] init];
     }
 }
 
