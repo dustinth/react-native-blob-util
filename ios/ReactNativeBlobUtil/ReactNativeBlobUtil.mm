@@ -15,7 +15,6 @@
 #import "ReactNativeBlobUtilSpec.h"
 #endif
 
-__strong RCTEventDispatcher * eventDispatcherRef;
 dispatch_queue_t commonTaskQueue;
 dispatch_queue_t fsQueue;
 
@@ -31,6 +30,8 @@ dispatch_queue_t fsQueue;
 
 @synthesize filePathPrefix;
 @synthesize documentController;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize bridge = _bridge;
 
 - (dispatch_queue_t) methodQueue {
     if(commonTaskQueue == nil)
@@ -38,13 +39,12 @@ dispatch_queue_t fsQueue;
     return commonTaskQueue;
 }
 
-+ (RCTEventDispatcher *)getRCTEventDispatcher
+- (RCTEventDispatcher *)getRCTEventDispatcher
 {
-    RCTRootView * rootView = (RCTRootView*) [[UIApplication sharedApplication] keyWindow].rootViewController.view;
 #if RCT_NEW_ARCH_ENABLED
-    return (RCTEventDispatcher *)[rootView.moduleRegistry moduleForName:"EventDispatcher"];
+    return (RCTEventDispatcher *)[self._moduleRegistry moduleForName:"EventDispatcher"];
 #else
-    return rootView.bridge.eventDispatcher;
+    return self.bridge.eventDispatcher;
 #endif
 }
 
@@ -67,8 +67,7 @@ RCT_EXPORT_MODULE();
         [[NSFileManager defaultManager] createDirectoryAtPath:[ReactNativeBlobUtilFS getTempPath] withIntermediateDirectories:YES attributes:nil error:NULL];
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        eventDispatcherRef = [ReactNativeBlobUtil getRCTEventDispatcher];
-        [ReactNativeBlobUtilNetwork emitExpiredTasks: eventDispatcherRef];
+        [ReactNativeBlobUtilNetwork emitExpiredTasks: [self getRCTEventDispatcher]];
     });
 
     return self;
@@ -126,7 +125,7 @@ RCT_EXPORT_METHOD(fetchBlobForm:(NSDictionary *)options
         {
             [[ReactNativeBlobUtilNetwork sharedInstance] sendRequest:options
                                                contentLength:bodyLength
-                                                      eventDispatcher:eventDispatcherRef
+                                                      eventDispatcher:[self getRCTEventDispatcher]
                                                       taskId:taskId
                                                  withRequest:req
                                                     callback:callback];
@@ -163,7 +162,7 @@ RCT_EXPORT_METHOD(fetchBlob:(NSDictionary *)options
         {
             [[ReactNativeBlobUtilNetwork sharedInstance] sendRequest:options
                                                contentLength:bodyLength
-                                                      eventDispatcher:eventDispatcherRef
+                                                      eventDispatcher:[self getRCTEventDispatcher]
                                                       taskId:taskId
                                                  withRequest:req
                                                     callback:callback];
@@ -357,7 +356,7 @@ RCT_EXPORT_METHOD(writeStream:(NSString *)path
     appendData:(BOOL)append
     callback:(RCTResponseSenderBlock)callback)
 {
-    ReactNativeBlobUtilFS * fileStream = [[ReactNativeBlobUtilFS alloc] initWithEventDispatcherRef:eventDispatcherRef];
+    ReactNativeBlobUtilFS * fileStream = [[ReactNativeBlobUtilFS alloc] initWithEventDispatcherRef:[self getRCTEventDispatcher]];
     NSFileManager * fm = [NSFileManager defaultManager];
     NSString * folder = [path stringByDeletingLastPathComponent];
     NSError* err = nil;
@@ -687,7 +686,7 @@ RCT_EXPORT_METHOD(readStream:(NSString *)path withEncoding:(NSString *)encoding 
     }
 
     dispatch_async(fsQueue, ^{
-        [ReactNativeBlobUtilFS readStream:path encoding:encoding bufferSize:bufferSize tick:tick streamId:streamId eventDispatcherRef:eventDispatcherRef];
+        [ReactNativeBlobUtilFS readStream:path encoding:encoding bufferSize:bufferSize tick:tick streamId:streamId eventDispatcherRef:[self getRCTEventDispatcher]];
     });
 }
 
@@ -872,7 +871,7 @@ RCT_EXPORT_METHOD(df:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(emitExpiredEvent:(RCTResponseSenderBlock)callback)
 {
-    [ReactNativeBlobUtilNetwork emitExpiredTasks:eventDispatcherRef];
+    [ReactNativeBlobUtilNetwork emitExpiredTasks:[self getRCTEventDispatcher]];
 }
 
 # pragma mark - Android Only methods

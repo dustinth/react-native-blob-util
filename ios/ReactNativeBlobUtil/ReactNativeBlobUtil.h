@@ -33,16 +33,14 @@
 #endif
 
 
-@interface ReactNativeBlobUtil : NSObject <RCTBridgeModule, UIDocumentInteractionControllerDelegate> {
-
+@interface ReactNativeBlobUtil : NSObject<RCTBridgeModule, UIDocumentInteractionControllerDelegate> {
     NSString * filePathPrefix;
-
 }
 
 @property (nonatomic) NSString * filePathPrefix;
 @property (retain) UIDocumentInteractionController * documentController;
 
-+ (RCTEventDispatcher *)getRCTEventDispatcher;
+- (RCTEventDispatcher *)getRCTEventDispatcher;
 
 @end
 
