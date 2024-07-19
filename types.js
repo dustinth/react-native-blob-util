@@ -11,7 +11,8 @@ export type ReactNativeBlobUtilConfig = {
   indicator : bool,
   followRedirect : bool,
   trusty : bool,
-  wifiOnly : bool
+  wifiOnly : bool,
+  encode : 'base64',
 };
 
 export type ReactNativeBlobUtilNative = {

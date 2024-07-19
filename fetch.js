@@ -92,23 +92,25 @@ function fetchFile(options = {}, method, url, headers = {}, body): Promise {
 
         // read data from file system
         default:
+            let forceEncode = options.encode
             promise = fs.stat(url)
                 .then((stat) => {
                     total = stat.size;
-                    return fs.readStream(url,
-                        headers.encoding || 'utf8',
+                    return {stream: fs.readStream(url,
+                        forceEncode || headers.encoding || 'utf8',
                         Math.floor(headers.bufferSize) || 409600,
                         Math.floor(headers.interval) || 100
-                    );
+                    ), total: total};
                 })
-                .then((stream) => new Promise((resolve, reject) => {
+                .then(({stream, total}) => new Promise((resolve, reject) => {
                     stream.open();
                     info = {
                         state: "2",
                         headers: {'source': 'system-fs'},
                         status: 200,
                         respType: 'text',
-                        rnfbEncode: headers.encoding || 'utf8'
+                        rnfbEncode: headers.encoding || 'utf8',
+                        total: total,
                     };
                     _stateChange(info);
                     stream.onData((chunk) => {
